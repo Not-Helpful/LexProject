@@ -24,14 +24,14 @@ public class Lexer {
         File f = new File(fileName + ".txt");
         FileReader freader = new FileReader(f);
         BufferedReader brf = new BufferedReader(freader);
+        lexeme = "";
         start(brf);
     }
 
     static void start(BufferedReader brf) throws IOException {
-        lexeme = "";
         integerRepresentation = brf.read();
         while(integerRepresentation != -1) {
-            char nextChar = (char) integerRepresentation;
+            nextChar = (char) integerRepresentation;
             if (Character.isLetter(nextChar)) {
                 symbolResolved = false;
                 id(brf);
@@ -52,6 +52,7 @@ public class Lexer {
     static void id(BufferedReader brf) throws IOException {
 
         while(integerRepresentation != -1) {
+            nextChar = (char) integerRepresentation;
             if (Character.isLetter(nextChar) || Character.isDigit(nextChar)) {
                 lexeme += nextChar;
             } else {
@@ -67,6 +68,7 @@ public class Lexer {
                 integerRepresentation = -1; 
             } else {
                 integerRepresentation = brf.read();
+                
             }
             
         }
@@ -75,6 +77,7 @@ public class Lexer {
     static void num(BufferedReader brf) throws IOException {
 
         while(integerRepresentation != -1) {
+            nextChar = (char) integerRepresentation;
             if (Character.isDigit(nextChar)) {
                 lexeme += nextChar;
             } else {
@@ -87,6 +90,7 @@ public class Lexer {
                 lexeme = "";
             } else {
                 integerRepresentation = brf.read();
+                
             }
         }
     }
@@ -94,9 +98,26 @@ public class Lexer {
     static void unk(BufferedReader brf) throws IOException {
         lexeme += nextChar;
         if (tree_map_ID.containsKey(lexeme)) {
-            
+            symbolResolved = true;
+            System.out.println(tree_map_ID.get(lexeme));
         } else {
-            
+            integerRepresentation = brf.read();
+            if (integerRepresentation == -1) {
+                // ERROR STATE
+            }
+            nextChar = (char) integerRepresentation;
+            lexeme += nextChar;
+            if (tree_map_ID.containsKey(lexeme)) {
+                symbolResolved = true;
+                System.out.println(tree_map_ID.get(lexeme));
+            }
+        }
+        if (symbolResolved) {
+            integerRepresentation = -1; 
+            lexeme = "";
+        } else {
+            // ERROR STATE
+            System.exit(1);
         }
 
     }
