@@ -115,16 +115,6 @@ public class Lexer {
 
         integerRepresentation = brf.read();
 
-        // This error is wrong.
-        // in the case of 'int x = 0;'
-        // ; is the last character
-        // meaning that reading the character after ;
-        // would result in integerRepresentation == -1
-        // Must check for this case then decide if error or not.
-        if (integerRepresentation == -1) {
-            System.out.println("NOT ERROR: .");
-            System.exit(1);
-        }
         nextChar = (char) integerRepresentation;
         tryForDoubleSymbolLexeme += nextChar;
         if (tree_map_ID.containsKey(tryForDoubleSymbolLexeme)) {
