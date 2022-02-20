@@ -7,13 +7,16 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.*;
 
 public class Lexer {
     static String lexeme;
     
-    TreeMap<String, String> tree_map_L = new TreeMap<String, String>();
-    TreeMap<String, String> tree_map_ID = new TreeMap<String, String>();
+    static TreeMap<String, String> tree_map_L = new TreeMap<String, String>();
+    static TreeMap<String, String> tree_map_ID = new TreeMap<String, String>();
+
+    static boolean symbolResolved;
+    static int integerRepresentation;
+    static char nextChar;
 
     static void Tokenize(String fileName) throws IOException {
         fillL();
@@ -26,19 +29,19 @@ public class Lexer {
 
     static void start(BufferedReader brf) throws IOException {
         lexeme = "";
-        int integerRepresentation = brf.read();
+        integerRepresentation = brf.read();
         while(integerRepresentation != -1) {
             char nextChar = (char) integerRepresentation;
             if (Character.isLetter(nextChar)) {
-                lexeme += nextChar;
+                symbolResolved = false;
                 id(brf);
-            }else if (Character.isDigit(nextChar)) {
-                lexeme += nextChar;
+            } else if (Character.isDigit(nextChar)) {
+                symbolResolved = false;
                 num(brf);
-            }else if (nextChar == ' '){
+            } else if (nextChar == ' '){
                 // Do nothing
-            }else {
-                lexeme += nextChar;
+            } else {
+                symbolResolved = false;
                 unk(brf);
             }
             integerRepresentation = brf.read();
@@ -47,53 +50,58 @@ public class Lexer {
     }
 
     static void id(BufferedReader brf) throws IOException {
-        int integerRepresentation = brf.read();
-        char nextChar = (char) integerRepresentation;
+
         while(integerRepresentation != -1) {
             if (Character.isLetter(nextChar) || Character.isDigit(nextChar)) {
                 lexeme += nextChar;
-            } else if() {
-                
             } else {
-                if () {
-                    
+                if (tree_map_L.containsKey(lexeme)) {
+                    System.out.println(tree_map_L.get(lexeme));
+                } else {
+                    System.out.println("IDENT");
+                    symbolResolved = true;
                 }
-                System.out.println("IDENT");
-                start(brf);
             }
-            integerRepresentation = brf.read();
+            if (symbolResolved) {
+                lexeme = "";
+                integerRepresentation = -1; 
+            } else {
+                integerRepresentation = brf.read();
+            }
+            
         }
     }
 
     static void num(BufferedReader brf) throws IOException {
-        int integerRepresentation = brf.read();
-        char nextChar = (char) integerRepresentation;
+
         while(integerRepresentation != -1) {
             if (Character.isDigit(nextChar)) {
                 lexeme += nextChar;
             } else {
                 System.out.println("INT_LIT");
-                start(brf);
+                symbolResolved = true;
+            } 
+
+            if (symbolResolved) {
+                integerRepresentation = -1; 
+                lexeme = "";
+            } else {
+                integerRepresentation = brf.read();
             }
-            integerRepresentation = brf.read();
         }
     }
 
     static void unk(BufferedReader brf) throws IOException {
-        int integerRepresentation = brf.read();
-        char nextChar = (char) integerRepresentation;
-        while(integerRepresentation != -1) {
-            if (Character.isDigit(nextChar)) {
-                lexeme += nextChar;
-            } else {
-                System.out.println("INT_LIT");
-                start(brf);
-            }
-            integerRepresentation = brf.read();
+        lexeme += nextChar;
+        if (tree_map_ID.containsKey(lexeme)) {
+            
+        } else {
+            
         }
+
     }
     
-    static void fillL(){
+    static void fillL() {
         tree_map_L.put("if", "IF");
         tree_map_L.put("for", "FOR");
         tree_map_L.put("while", "WHILE");
@@ -105,30 +113,29 @@ public class Lexer {
         tree_map_L.put("break", "BREAK");
         tree_map_L.put("end", "END");
     }
-    static void fill_ID(){
-        tree_map_L.put("=", "ASSIGN");
-        tree_map_L.put("+", "ADD");
-        tree_map_L.put("-", "SUB");
-        tree_map_L.put("*", "MUL");
-        tree_map_L.put("/", "DIV");
-        tree_map_L.put("%", "MOD");
-        tree_map_L.put(">", "GT");
-        tree_map_L.put("<", "LT");
-        tree_map_L.put(">=", "GE");
-        tree_map_L.put("<=", "LE");
-        
-        tree_map_L.put("++", "INC");
-        tree_map_L.put("(", "LP");
-        tree_map_L.put(")", "RP");
-        tree_map_L.put("{", "LB");
-        tree_map_L.put("}", "RB");
-        tree_map_L.put("|", "OR");
-        tree_map_L.put("&", "AND");
-        tree_map_L.put("==", "EE");
-        tree_map_L.put("!", "NEG");
-        tree_map_L.put(",", "COMMA");
-        tree_map_L.put(";", "SEMI");
-        
+
+    static void fill_ID() {
+        tree_map_ID.put("=", "ASSIGN");
+        tree_map_ID.put("+", "ADD");
+        tree_map_ID.put("-", "SUB");
+        tree_map_ID.put("*", "MUL");
+        tree_map_ID.put("/", "DIV");
+        tree_map_ID.put("%", "MOD");
+        tree_map_ID.put(">", "GT");
+        tree_map_ID.put("<", "LT");
+        tree_map_ID.put(">=", "GE");
+        tree_map_ID.put("<=", "LE");
+        tree_map_ID.put("++", "INC");
+        tree_map_ID.put("(", "LP");
+        tree_map_ID.put(")", "RP");
+        tree_map_ID.put("{", "LB");
+        tree_map_ID.put("}", "RB");
+        tree_map_ID.put("|", "OR");
+        tree_map_ID.put("&", "AND");
+        tree_map_ID.put("==", "EE");
+        tree_map_ID.put("!", "NEG");
+        tree_map_ID.put(",", "COMMA");
+        tree_map_ID.put(";", "SEMI");  
     }
 
 
