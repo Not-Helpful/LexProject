@@ -1,3 +1,4 @@
+package lexproject;
 // Brandon Lara
 // Ethan Riley
 
@@ -24,10 +25,14 @@ public class Lexer {
         File f = new File(fileName + ".txt");
         FileReader freader = new FileReader(f);
         BufferedReader brf = new BufferedReader(freader);
+
         lexeme = "";
         start(brf);
     }
 
+    // Reads a character and then assess which function to call.
+    // Functions called are responsible for reading in a new character.
+    // This could be mitigated with different file read implementations.
     static void start(BufferedReader brf) throws IOException {
         integerRepresentation = brf.read();
         while(integerRepresentation != -1) {
@@ -39,18 +44,18 @@ public class Lexer {
                 symbolResolved = false;
                 num(brf);
             } else if (nextChar == ' '){
-                // Do nothing
+                integerRepresentation = brf.read();
             } else {
                 symbolResolved = false;
                 unk(brf);
             }
-            integerRepresentation = brf.read();
         }
             
     }
 
+    // ID state in the finite state machine from the slides.
+    // Function is called if start reads a letter.
     static void id(BufferedReader brf) throws IOException {
-
         while(integerRepresentation != -1) {
             nextChar = (char) integerRepresentation;
             if (Character.isLetter(nextChar) || Character.isDigit(nextChar)) {
@@ -58,6 +63,7 @@ public class Lexer {
             } else {
                 if (tree_map_L.containsKey(lexeme)) {
                     System.out.println(tree_map_L.get(lexeme));
+                    symbolResolved = true;
                 } else {
                     System.out.println("IDENT");
                     symbolResolved = true;
@@ -65,58 +71,76 @@ public class Lexer {
             }
             if (symbolResolved) {
                 lexeme = "";
-                integerRepresentation = -1; 
+                break;
             } else {
                 integerRepresentation = brf.read();
-                
             }
             
         }
     }
 
+    // ID state in the finite state machine from the slides.
+    // Function is called if start reads a number.
     static void num(BufferedReader brf) throws IOException {
 
         while(integerRepresentation != -1) {
             nextChar = (char) integerRepresentation;
             if (Character.isDigit(nextChar)) {
                 lexeme += nextChar;
+            } else if (Character.isLetter(nextChar)) {
+                System.out.println("ERROR: Invalid Identifier.");
+                System.exit(1);
             } else {
                 System.out.println("INT_LIT");
                 symbolResolved = true;
-            } 
+            }
 
             if (symbolResolved) {
-                integerRepresentation = -1; 
                 lexeme = "";
+                break;
             } else {
                 integerRepresentation = brf.read();
-                
             }
         }
     }
 
+    // ID state in the finite state machine from the slides.
+    // Function is called in if start did not read a letter, a number, or ' '.
     static void unk(BufferedReader brf) throws IOException {
+        // lexeme holds the current character
         lexeme += nextChar;
-        if (tree_map_ID.containsKey(lexeme)) {
+        // tryForDoubleSymbolLexeme holds the current character 
+        // plus the next character
+        String tryForDoubleSymbolLexeme = "" + nextChar;
+
+        integerRepresentation = brf.read();
+
+        // This error is wrong.
+        // in the case of 'int x = 0;'
+        // ; is the last character
+        // meaning that reading the character after ;
+        // would result in integerRepresentation == -1
+        // Must check for this case then decide if error or not.
+        if (integerRepresentation == -1) {
+            System.out.println("NOT ERROR: .");
+            System.exit(1);
+        }
+        nextChar = (char) integerRepresentation;
+        tryForDoubleSymbolLexeme += nextChar;
+        if (tree_map_ID.containsKey(tryForDoubleSymbolLexeme)) {
             symbolResolved = true;
-            System.out.println(tree_map_ID.get(lexeme));
-        } else {
             integerRepresentation = brf.read();
-            if (integerRepresentation == -1) {
-                // ERROR STATE
-            }
-            nextChar = (char) integerRepresentation;
-            lexeme += nextChar;
+            System.out.println(tree_map_ID.get(tryForDoubleSymbolLexeme));
+        } else {
             if (tree_map_ID.containsKey(lexeme)) {
                 symbolResolved = true;
                 System.out.println(tree_map_ID.get(lexeme));
             }
         }
         if (symbolResolved) {
-            integerRepresentation = -1; 
             lexeme = "";
         } else {
-            // ERROR STATE
+            System.out.println("ERROR: .");
             System.exit(1);
         }
 
