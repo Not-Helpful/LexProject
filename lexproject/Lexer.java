@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.*;
 
 public class Lexer {
@@ -18,14 +20,19 @@ public class Lexer {
     static boolean symbolResolved;
     static int integerRepresentation;
     static char nextChar;
+    static String line = "";
 
     static void Tokenize(String fileName) throws IOException {
         fillL();
         fill_ID();
-        File f = new File(fileName + ".txt");
-        FileReader freader = new FileReader(f);
-        BufferedReader brf = new BufferedReader(freader);
+        
+        Scanner scanner = new Scanner(new File(fileName));
+        while (scanner.hasNextLine()) {
+           line += scanner.nextLine();
+        }
 
+        Reader codeReader = new StringReader(line);
+        BufferedReader brf = new BufferedReader(codeReader);
         lexeme = "";
         start(brf);
     }
