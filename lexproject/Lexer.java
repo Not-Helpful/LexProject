@@ -26,7 +26,7 @@ public class Lexer {
         fillL();
         fill_ID();
         
-        Scanner scanner = new Scanner(new File(fileName));
+        Scanner scanner = new Scanner(new File(fileName+".txt"));
         while (scanner.hasNextLine()) {
            line += scanner.nextLine();
         }
@@ -72,7 +72,7 @@ public class Lexer {
                     System.out.println(tree_map_L.get(lexeme));
                     symbolResolved = true;
                 } else {
-                    System.out.println("IDENT");
+                    System.out.println("IDENT:"+lexeme);
                     symbolResolved = true;
                 }
             }
@@ -95,10 +95,10 @@ public class Lexer {
             if (Character.isDigit(nextChar)) {
                 lexeme += nextChar;
             } else if (Character.isLetter(nextChar)) {
-                System.out.println("ERROR: Invalid Identifier.");
+                System.out.println("SYNTAX ERROR: INVALID IDENTITFER NAME");
                 System.exit(1);
             } else {
-                System.out.println("INT_LIT");
+                System.out.println("INT_LIT:"+lexeme);
                 symbolResolved = true;
             }
 
