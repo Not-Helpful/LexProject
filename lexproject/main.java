@@ -6,5 +6,5 @@ public class main {
     public static void main(String[] args) throws IOException {
         Lexer.Tokenize("testcase.txt");
     }
-    
+    //Upload to github
 }
