@@ -29,6 +29,7 @@ public class Lexer {
         Scanner scanner = new Scanner(new File(fileName));
         while (scanner.hasNextLine()) {
            line += scanner.nextLine();
+           line += '\n';
         }
 
         Reader codeReader = new StringReader(line);
@@ -50,7 +51,7 @@ public class Lexer {
             } else if (Character.isDigit(nextChar)) {
                 symbolResolved = false;
                 num(brf);
-            } else if (nextChar == ' '){
+            } else if (nextChar == ' ' || nextChar == '\n' || nextChar == '\t'){
                 integerRepresentation = brf.read();
             } else {
                 symbolResolved = false;
@@ -65,7 +66,7 @@ public class Lexer {
     static void id(BufferedReader brf) throws IOException {
         while(integerRepresentation != -1) {
             nextChar = (char) integerRepresentation;
-            if (Character.isLetter(nextChar) || Character.isDigit(nextChar)) {
+            if ((Character.isLetter(nextChar) || Character.isDigit(nextChar)) && (nextChar != '\n' && nextChar != '\t')) {
                 lexeme += nextChar;
             } else {
                 if (tree_map_L.containsKey(lexeme)) {
@@ -92,7 +93,7 @@ public class Lexer {
 
         while(integerRepresentation != -1) {
             nextChar = (char) integerRepresentation;
-            if (Character.isDigit(nextChar)) {
+            if (Character.isDigit(nextChar) && (nextChar != '\n' && nextChar != '\t')) {
                 lexeme += nextChar;
             } else if (Character.isLetter(nextChar)) {
                 System.out.println("SYNTAX ERROR: INVALID IDENTITFER NAME");
@@ -137,7 +138,7 @@ public class Lexer {
         if (symbolResolved) {
             lexeme = "";
         } else {
-            System.out.println("ERROR: .");
+            System.out.println("SYNTAX ERROR: INVALID CHARACTER");
             System.exit(1);
         }
 
