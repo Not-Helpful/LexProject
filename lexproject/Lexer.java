@@ -1,6 +1,8 @@
-package lexproject;
 // Brandon Lara
 // Ethan Riley
+
+package lexproject;
+
 
 
 import java.io.File;  
