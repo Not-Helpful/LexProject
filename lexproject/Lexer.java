@@ -26,7 +26,7 @@ public class Lexer {
         fillL();
         fill_ID();
         
-        Scanner scanner = new Scanner(new File(fileName+".txt"));
+        Scanner scanner = new Scanner(new File(fileName));
         while (scanner.hasNextLine()) {
            line += scanner.nextLine();
         }
